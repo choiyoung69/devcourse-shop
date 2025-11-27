@@ -1,0 +1,65 @@
+package com.example.shop.member.presentation;
+
+import com.example.shop.common.ResponseEntity;
+import com.example.shop.member.application.MemberService;
+import com.example.shop.member.application.dto.MemberInfo;
+import com.example.shop.member.presentation.dto.MemberRequest;
+import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("${api.v1}/members")
+public class MemberController {
+
+    @Autowired
+    private MemberService memberService;
+
+    @Operation(
+            summary = "회원 목록 조회",
+            description = "public.member 테이블에 저장된 모든 회원을 조회한다."
+    )
+    @GetMapping
+    public ResponseEntity<List<MemberInfo>> findAll(Pageable pageable) {
+        List<MemberInfo> members = memberService.findALl(pageable);
+        return new ResponseEntity<>(HttpStatus.OK.value(), members, members.size());
+    }
+
+    @Operation(
+            summary = "회원 등록",
+            description = "요청으로 받은 회원 정보를 public.member 테이블에 저장한다."
+    )
+    @PostMapping
+    public ResponseEntity<MemberInfo> create(@RequestBody MemberRequest memberRequest) {
+        return new ResponseEntity<>(HttpStatus.OK.value(), memberService.create(memberRequest.toCommand()), 1);
+    }
+
+    @Operation(
+            summary = "회원 수정",
+            description = "요청으로 받은 회원 정보를 public.member 테이블에 수정한다."
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<MemberInfo> update(@PathVariable String id, @RequestBody MemberRequest memberRequest) {
+        return new ResponseEntity<>(HttpStatus.OK.value(), memberService.update(memberRequest.toCommand(), id), 1);
+    }
+
+    @Operation(
+            summary = "회원 정보 삭제",
+            description = "요청으로 받은 회원 정보를 public.member 테이블에서 삭제한다."
+    )
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable String id) {
+        memberService.deleteById(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT.value(), null, 0);
+    }
+}
