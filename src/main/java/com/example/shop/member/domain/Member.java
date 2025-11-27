@@ -9,9 +9,11 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import lombok.Getter;
 
 @Entity
 @Table(name = "\"member\"", schema = "public")
+@Getter
 public class Member {
 
     @Schema(description = "유저의 UUID")
